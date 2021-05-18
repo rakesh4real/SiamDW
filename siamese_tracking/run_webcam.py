@@ -8,6 +8,7 @@
 # ------------------------------------------------------------------------------
 
 import _init_paths
+import torch
 import os
 import cv2
 import random
@@ -151,9 +152,13 @@ def main():
 
     print('[*] ======= Track video with {} ======='.format(args.arch))
 
+  
     net = load_pretrain(net, args.resume)
     net.eval()
-    net = net.cuda()
+
+    if torch.cuda.is_available():
+        net = net.cuda()
+
 
 
     track_webcam(tracker, net)

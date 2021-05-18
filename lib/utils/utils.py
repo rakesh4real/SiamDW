@@ -226,10 +226,10 @@ def remove_prefix(state_dict, prefix):
     return {f(key): value for key, value in state_dict.items()}
 
 
-def load_pretrain(model, pretrained_path, to_cpu=False):
+def load_pretrain(model, pretrained_path):
     print('load pretrained model from {}'.format(pretrained_path))
 
-    if not to_cpu:
+    if torch.cuda.is_available():
         device = torch.cuda.current_device()
         pretrained_dict = torch.load(pretrained_path, map_location=lambda storage, loc: storage.cuda(device))
     else:
@@ -242,7 +242,7 @@ def load_pretrain(model, pretrained_path, to_cpu=False):
     check_keys(model, pretrained_dict)
     model.load_state_dict(pretrained_dict, strict=False)
     
-    if not to_cpu:
+    if torch.cuda.is_available():
         return model
     return model.to('cpu')
 

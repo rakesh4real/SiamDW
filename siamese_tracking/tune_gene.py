@@ -67,7 +67,10 @@ engine = GAEngine(population=population, selection=selection, \
 net = models.__dict__[args.arch]()
 net = load_pretrain(net, args.resume)
 net.eval()
-net = net.cuda()
+
+if torch.cuda.is_available():
+    net = net.cuda()
+
 print('==> pretrained model has been loaded')
 
 # prepare tracker

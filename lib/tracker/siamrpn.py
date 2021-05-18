@@ -71,7 +71,10 @@ class SiamRPN(object):
         z_crop = get_subwindow_tracking(im, target_pos, p.exemplar_size, s_z, avg_chans)
 
         z = Variable(z_crop.unsqueeze(0))
-        net.template(z.cuda())
+        if torch.cuda.is_available():
+            net.template(z.cuda())
+        else: 
+            net.template(z)
 
         if p.windowing == 'cosine':
             window = np.outer(np.hanning(p.score_size), np.hanning(p.score_size))  # [17,17]
@@ -149,8 +152,14 @@ class SiamRPN(object):
 
         # extract scaled crops for search region x at previous target position
         x_crop = Variable(get_subwindow_tracking(im, target_pos, p.instance_size, python2round(s_x), avg_chans).unsqueeze(0))
+        
+        # passing the required input for cpu/cuda
+        if torch.cuda.is_available():
+            param = x_crop.cuda()
+        else:
+            param = x_crop 
 
-        target_pos, target_sz, score = self.update(net, x_crop.cuda(), target_pos, target_sz * scale_z, window, scale_z, p)
+        target_pos, target_sz, score = self.update(net, param, target_pos, target_sz * scale_z, window, scale_z, p)
         target_pos[0] = max(0, min(state['im_w'], target_pos[0]))
         target_pos[1] = max(0, min(state['im_h'], target_pos[1]))
         target_sz[0] = max(10, min(state['im_w'], target_sz[0]))
