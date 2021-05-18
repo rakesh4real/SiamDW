@@ -121,7 +121,9 @@ def main():
     net = models.__dict__[args.arch](anchors_nums=args.anchor_nums, cls_type=args.cls_type)
     net = load_pretrain(net, args.resume)
     net.eval()
-    net = net.cuda()
+    
+    if torch.cuda.is_available():
+        net = net.cuda()
 
     # prepare video
     dataset = load_dataset(args.dataset)

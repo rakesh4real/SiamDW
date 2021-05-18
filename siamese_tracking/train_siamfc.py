@@ -152,7 +152,11 @@ def main():
     gpus = [int(i) for i in config.GPUS.split(',')]
     gpu_num = len(gpus)
     logger.info('GPU NUM: {:2d}'.format(len(gpus)))
-    model = torch.nn.DataParallel(model, device_ids=gpus).cuda()
+
+    if torch.cuda.is_available():
+        model = torch.nn.DataParallel(model, device_ids=gpus).cuda()
+    else: 
+        model = torch.nn.DataParallel(model, device_ids=gpus)
     logger.info('model prepare done')
 
     # [*] train

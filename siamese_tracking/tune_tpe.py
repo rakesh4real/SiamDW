@@ -51,7 +51,9 @@ else:
 
 model = load_pretrain(model, args.resume)
 model.eval()
-model = model.cuda()
+
+if torch.cuda.is_available():
+    model = model.cuda()
 print('pretrained model has been loaded')
 
 
